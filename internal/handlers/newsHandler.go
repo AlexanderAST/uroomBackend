@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"uroomBackend/internal/model"
 )
@@ -11,6 +12,11 @@ func (s *server) handleCreateNews() http.HandlerFunc {
 		req := &ReqNews{}
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 			s.error(w, r, http.StatusBadRequest, err)
+			return
+		}
+
+		if req.Name == "" || req.SmallDescription == "" || req.FullDescription == "" {
+			s.error(w, r, http.StatusBadRequest, errors.New("invalid data"))
 			return
 		}
 
