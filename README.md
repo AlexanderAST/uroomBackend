@@ -11,6 +11,10 @@ POST /create-news (создание новости) :
   "status": "success"
 неккоректная дата:
  "error": "pq: invalid input syntax for type date: \"\""
+пустое поле name или small_description или full_description:
+{
+  error:"invalid data"
+}
  
 DELETE /delete-news (удаление новости) :
   {
@@ -39,7 +43,7 @@ POST /get-newsById (получить запись по id):
     
   GET /get-allNews(получить список всех новостей):
     успешное получение:
-     "news": [
+     "news": 
         {
             "id": 8,
             "date": "2024-01-01T00:00:00Z",
@@ -56,7 +60,7 @@ POST /get-newsById (получить запись по id):
             "full_description": "",
             "image_path": "на серваке"
         }
-    ]
+    
       нет новостей:
        "news": []
        
@@ -68,7 +72,7 @@ POST /get-newsById (получить запись по id):
     "full_description" : "",
     "image_path" : ""
 
-    ответ: 
+    если успешное изменение новости: 
      "status": "success"
 
     PUT /upload-photo(загрузить фото):
