@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  uroombackend:
+    build: ./
+    command: ["./wait-for-postgres.sh", "db", "./uroomBackend"]
+    ports:
+      - "8083:8083"
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_PASSWORD=qwerty
+
+
+  db:
+    restart: always
+    image: postgres:latest
+    volumes:
+      - ./.database/postgres/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=qwerty
+    ports:
+      - "5439:5432"
