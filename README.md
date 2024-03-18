@@ -1,3 +1,9 @@
+Запуск сервера:
+  docker run --name=uroom -e POSTGRES_PASSWORD='qwerty' -p5439:5432 -d --rm postgres
+  migrate -path db/newsMigrations -database 'postgres://postgres:qwerty@localhost:5439/postgres?sslmode=disable' -verbose down
+  migrate -path db/newsMigrations -database 'postgres://postgres:qwerty@localhost:5439/postgres?sslmode=disable' -verbose up
+  go run cmd/uroom/main.go
+
 POST /create-news (создание новости) :
 {
   "date" : "",
