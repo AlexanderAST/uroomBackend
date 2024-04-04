@@ -62,9 +62,9 @@ func Start() error {
 
 	logrus.Info("Server start")
 
-	portConfig := viper.GetString("port")
+	//portConfig := viper.GetString("port")
 
-	return http.ListenAndServe(portConfig, srv)
+	return http.ListenAndServeTLS(":8083", "certificate.crt", "key.key", srv)
 }
 
 func newPostgresDB(cfg Config) (*sql.DB, error) {

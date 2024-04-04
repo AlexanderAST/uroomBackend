@@ -2,11 +2,18 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"os"
 	"path"
+	"strings"
 )
+
+func deleteSpaces(str string) string {
+	result := strings.ReplaceAll(str, " ", "")
+	return result
+}
 
 func (s *server) handlePhotoUpload() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +28,9 @@ func (s *server) handlePhotoUpload() http.HandlerFunc {
 
 		defer file.Close()
 
-		dst, err := os.Create("./static/news/" + handler.Filename)
+		newName := deleteSpaces(handler.Filename)
+
+		dst, err := os.Create("./static/news/" + newName)
 
 		defer dst.Close()
 
@@ -30,7 +39,7 @@ func (s *server) handlePhotoUpload() http.HandlerFunc {
 			return
 		}
 
-		filePath := path.Join("./static/news/" + handler.Filename)
+		filePath := path.Join("./static/news/" + newName)
 
 		if _, err := io.Copy(dst, file); err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
@@ -58,5 +67,30 @@ func (s *server) handlePhotoDelete() http.HandlerFunc {
 		}
 
 		s.respond(w, r, http.StatusOK, map[string]interface{}{"status": "successfully delete", "file path": filePath})
+	}
+}
+
+func (s *server) handleGetPhoto() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fileName := r.URL.Query().Get("filename")
+		if fileName == "" {
+			s.error(w, r, http.StatusBadRequest, errors.New("filename parameter is required"))
+			return
+		}
+
+		file, err := os.Open(fileName)
+		if err != nil {
+			s.error(w, r, http.StatusNotFound, err)
+			return
+		}
+		defer file.Close()
+
+		w.Header().Set("Content-Type", "image/jpeg")
+		w.Header().Set("Content-Type", "image/png")
+
+		if _, err := io.Copy(w, file); err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
 	}
 }
